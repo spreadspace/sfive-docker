@@ -1,0 +1,19 @@
+---
+branches:
+  only:
+    - master
+
+env:
+  global:
+    - DOCKER_REPO=spreadspace/sfive
+
+script:
+  ### pull current images to potentially use docker build cache
+  - docker pull $DOCKER_REPO:latest
+  ### build the new images
+  - docker build -t $DOCKER_REPO:latest .
+  - docker tag $DOCKER_REPO:latest $DOCKER_REPO:$TRAVIS_BUILD_NUMBER
+  ### push to docker-hub
+  - docker login -u $DOCKER_USER -p $DOCKER_PASS
+  - docker push $DOCKER_REPO:$TRAVIS_BUILD_NUMBER
+  - docker push $DOCKER_REPO:latest
